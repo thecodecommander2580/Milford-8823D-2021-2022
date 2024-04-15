@@ -12,7 +12,7 @@ extern potV2 fLiftPotentiometer;
 extern rotation leftRotation;
 extern rotation rightRotation;
 extern rotation backRotation;
-extern pot PotentiometerG;
+extern pot autonSelect;
 extern digital_out claw;
 extern motor frontLeftBase;
 extern motor centerLeftBase;

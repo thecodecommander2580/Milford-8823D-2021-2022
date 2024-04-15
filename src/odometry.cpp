@@ -35,7 +35,7 @@ int pos() //This will constantly be running in the background updating the posit
   double polarAngle;
   double deltaGlobalX;
   double deltaGlobalY;
-  leftRotation.resetPosition(); //These commands had to be changed to reflect the new sensors.
+  leftRotation.resetPosition();
   rightRotation.resetPosition();
   backRotation.resetPosition();
   Inertial.setRotation(intAngle, degrees);
@@ -438,6 +438,254 @@ void drivebackPD(double dist, int speedCap)
   backRightBase.stop(brake);
 }
 
+void drivebackPDforkLift(double dist, int speedCap)
+{
+  //Same as the other loop but with an acceleration because backwards is less accurate (idk why)
+  const int diameter = 4;
+  float kP = 1.6;
+  float kD = 0.1;
+  float error = dist;
+  float prevError = dist;
+  float derivError;
+  float motorSpeed;
+  int minSpeed = 40;
+  frontLeftBase.setPosition(0,rev);
+  frontRightBase.setPosition(0, rev);
+  //slight acceleration to prevent jurking forward
+  frontLeftBase.spin(directionType::rev, 20, velocityUnits::pct);
+  centerLeftBase.spin(directionType::rev, 20, velocityUnits::pct);
+  backLeftBase.spin(directionType::rev, 20, velocityUnits::pct);
+  frontRightBase.spin(directionType::rev, 20, velocityUnits::pct);
+  centerRightBase.spin(directionType::rev, 20, velocityUnits::pct);
+  backRightBase.spin(directionType::rev, 20, velocityUnits::pct);
+  vex::wait(200, msec);
+  while(fabs(frontLeftBase.position(rev)*diameter*pi) < dist)
+  {
+    error = dist-(fabs(frontLeftBase.position(rev)*diameter*pi));
+    derivError = prevError-error;
+    motorSpeed = error*kP + derivError*kD;
+    if(fLiftPotentiometer.angle(degrees) > 153)
+    {
+      forkLift.spin(reverse, 100, pct);
+    }
+    else {
+      forkLift.stop(brake);
+    }
+    if(motorSpeed > speedCap)
+    {
+      motorSpeed = speedCap;
+    }
+    else if(motorSpeed < minSpeed) 
+    {
+      motorSpeed = minSpeed;
+    }
+    else{}
+    frontLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    centerLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    backLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    frontRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    centerRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    backRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    vex::wait(15, msec);
+  }
+  stopBase();
+}
+void turn45()
+{
+  //Same as the other loop but with an acceleration because backwards is less accurate (idk why)
+  Controller1.Screen.clearScreen();
+  float kP = 0.4;
+  float kD = 0.1;
+  float error = 45;
+  float prevError = 45;
+  float derivError;
+  float motorSpeed;
+  Inertial.setRotation(0, deg);
+  int minSpeed = 10;
+  frontLeftBase.setPosition(0,rev);
+  frontRightBase.setPosition(0, rev);
+  while(Inertial.rotation(deg) < 44.9)
+  {
+    error = fabs(45-Inertial.rotation(deg));
+    derivError = prevError-error;
+    motorSpeed = error*kP + derivError*kD;
+    if(motorSpeed > 75)
+    {
+      motorSpeed = 75;
+    }
+    else if(motorSpeed < minSpeed) 
+    {
+      motorSpeed = minSpeed;
+    }
+    else{}
+    frontLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    centerLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    backLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    frontRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    centerRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    backRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    vex::wait(10, msec);
+  }
+  stopBase();
+}
+void CWturn45(float target)
+{
+  //Same as the other loop but with an acceleration because backwards is less accurate (idk why)
+  Controller1.Screen.clearScreen();
+  float kP = 0.4;
+  float kD = 0.1;
+  float error = target;
+  float prevError = target;
+  float derivError;
+  float motorSpeed;
+  Inertial.setRotation(target, deg);
+  int minSpeed = 10;
+  frontLeftBase.setPosition(0,rev);
+  frontRightBase.setPosition(0, rev);
+  while(Inertial.rotation(deg) > 0)
+  {
+    error = fabs(Inertial.rotation(deg));
+    derivError = prevError-error;
+    motorSpeed = error*kP + derivError*kD;
+    if(motorSpeed > 75)
+    {
+      motorSpeed = 75;
+    }
+    else if(motorSpeed < minSpeed) 
+    {
+      motorSpeed = minSpeed;
+    }
+    else{}
+    frontLeftBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    centerLeftBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    backLeftBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    frontRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    centerRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    backRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    vex::wait(10, msec);
+  }
+  stopBase();
+}
+void turn90()
+{
+  //Same as the other loop but with an acceleration because backwards is less accurate (idk why)
+  Controller1.Screen.clearScreen();
+  float kP = 0.5;
+  float kD = 0.1;
+  float error = 90;
+  float prevError = 90;
+  float derivError;
+  float motorSpeed;
+  Inertial.setRotation(0, deg);
+  int minSpeed = 5;
+  frontLeftBase.setPosition(0,rev);
+  frontRightBase.setPosition(0, rev);
+  while(Inertial.rotation(deg) < 89.8)
+  {
+    error = fabs(90-Inertial.rotation(deg));
+    derivError = prevError-error;
+    motorSpeed = error*kP + derivError*kD;
+    if(motorSpeed > 75)
+    {
+      motorSpeed = 75;
+    }
+    else if(motorSpeed < minSpeed) 
+    {
+      motorSpeed = minSpeed;
+    }
+    else{}
+    frontLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    centerLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    backLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    frontRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    centerRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    backRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    vex::wait(10, msec);
+  }
+  stopBase();
+}
+void turn135()
+{
+  //Same as the other loop but with an acceleration because backwards is less accurate (idk why)
+  Controller1.Screen.clearScreen();
+  float kP = 0.5;
+  float kD = 0.1;
+  float error = 135;
+  float prevError = 135;
+  float derivError;
+  float motorSpeed;
+  Inertial.setRotation(0, deg);
+  int minSpeed = 5;
+  frontLeftBase.setPosition(0,rev);
+  frontRightBase.setPosition(0, rev);
+  while(Inertial.rotation(deg) < 134.8)
+  {
+    error = fabs(135-Inertial.rotation(deg));
+    derivError = prevError-error;
+    motorSpeed = error*kP + derivError*kD;
+    if(motorSpeed > 75)
+    {
+      motorSpeed = 75;
+    }
+    else if(motorSpeed < minSpeed) 
+    {
+      motorSpeed = minSpeed;
+    }
+    else{}
+    frontLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    centerLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    backLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    frontRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    centerRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    backRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    vex::wait(10, msec);
+  }
+  stopBase();
+  Controller1.Screen.setCursor(0, 0);
+  Controller1.Screen.clearLine();
+  Controller1.Screen.print("%f", Inertial.rotation(deg));
+}
+void CWturn90()
+{
+  //Same as the other loop but with an acceleration because backwards is less accurate (idk why)
+  Controller1.Screen.clearScreen();
+  float kP = 0.5;
+  float kD = 0.1;
+  float error = 90;
+  float prevError = 90;
+  float derivError;
+  float motorSpeed;
+  Inertial.setRotation(90, deg);
+  int minSpeed = 5;
+  frontLeftBase.setPosition(0,rev);
+  frontRightBase.setPosition(0, rev);
+  while(Inertial.rotation(deg) > 0)
+  {
+    error = fabs(Inertial.rotation(deg));
+    derivError = prevError-error;
+    motorSpeed = error*kP + derivError*kD;
+    if(motorSpeed > 75)
+    {
+      motorSpeed = 75;
+    }
+    else if(motorSpeed < minSpeed) 
+    {
+      motorSpeed = minSpeed;
+    }
+    else{}
+    frontLeftBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    centerLeftBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    backLeftBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    frontRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    centerRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    backRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    vex::wait(10, msec);
+  }
+  stopBase();
+  Controller1.Screen.setCursor(0, 0);
+  Controller1.Screen.clearLine();
+  Controller1.Screen.print("%f", Inertial.rotation(deg));
+}
 
 void closeClaw()
 {
@@ -446,5 +694,16 @@ void closeClaw()
   vex::wait(1000, msec);
   slipClaw.stop(brake);
   */
-  claw.set(false);
+  claw.set(true);
+}
+
+void stopBase()
+{
+  frontLeftBase.stop(brake);
+  centerLeftBase.stop(brake);
+  backLeftBase.stop(brake);
+
+  frontRightBase.stop(brake);
+  centerRightBase.stop(brake);
+  backRightBase.stop(brake);
 }

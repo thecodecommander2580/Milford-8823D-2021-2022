@@ -19,7 +19,7 @@
 // leftRotation         rotation      19              
 // rightRotation        rotation      18              
 // backRotation         rotation      17              
-// PotentiometerG       pot           G               
+// autonSelect          pot           G               
 // claw                 digital_out   C               
 // frontLeftBase        motor         11              
 // centerLeftBase       motor         12              
@@ -45,7 +45,7 @@ bool reverseDriving = false; //Changing this between "true" and "false" will fli
 int liftSpeed = 90; //Configure the default speeds of motors
 int forkliftSpeed = 95;
 //int slipclawSpeed = 95;
-
+float holdClawPosition;
 
 float liftUpperLimit = 297; //Configure the min and max height for the fork lift
 float liftLowerLimit = 170;
@@ -61,6 +61,7 @@ bool debug = false;
 const double pi = 3.1415926;
 
 // Functions
+
 
 void moveBaseForward(double Distance, bool doNotContinue)
 {
@@ -189,6 +190,25 @@ void pre_auton(void) {
   //slipClaw.setMaxTorque(100, percent);
   //slipClaw.setVelocity(slipclawSpeed, percent);
 
+  Controller1.Screen.setCursor(0, 0);
+    Controller1.Screen.clearLine();
+    if(autonSelect.angle(deg) < 70)
+    {
+      Controller1.Screen.print("Left Win Point: %f", autonSelect.angle(deg));
+    }
+    else if(autonSelect.angle(deg) >= 70 && autonSelect.angle(deg) < 140)
+    {
+      Controller1.Screen.print("Right Side Yellow: %f", autonSelect.angle(deg));
+    }
+    else if(autonSelect.angle(deg) >= 140 && autonSelect.angle(deg) < 210)
+    {
+      Controller1.Screen.print("Left Side Yellow: %f", autonSelect.angle(deg));
+    }
+    else
+    {
+      Controller1.Screen.print("Nothing");
+    }
+
   if(debug)
   {
     Controller1.Screen.clearScreen();
@@ -207,23 +227,23 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+ /*
+     frontLeftBase.stop();
+     frontRightBase.stop();
+     drivebackPD(48, 100);
+     frontLeftBase.spin(directionType::rev, 10, velocityUnits::pct);
+     frontRightBase.spin(directionType::rev, 10, velocityUnits::pct);
+     closeClaw();
+     frontLeftBase.stop(brake);
+     frontRightBase.stop(brake);
+     drivePD(42, 100);
+     while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit) //Move the forklift down untill it's fully down
+      {
+        forkLift.spin(reverse);
+      }
 
-  frontLeftBase.stop();
-  frontRightBase.stop();
-  drivebackPD(48, 100);
-  frontLeftBase.spin(directionType::rev, 10, velocityUnits::pct);
-  frontRightBase.spin(directionType::rev, 10, velocityUnits::pct);
-  closeClaw();
-  frontLeftBase.stop(brake);
-  frontRightBase.stop(brake);
-  drivePD(42, 100);
-  while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit) //Move the forklift down untill it's fully down
-    {
-     forkLift.spin(reverse);
-    }
-
-  forkLift.stop();                            //Stop the forklift
-  /*
+      forkLift.stop();                             //Stop the forklift
+  
   setBaseSpeed(75);                           //Set the velocity of the motors
   slipClaw.setVelocity(100, percent);
 
@@ -239,6 +259,100 @@ void autonomous(void) {
 
   forkLift.stop();                             //Stop the forklift
   */
+
+  if(autonSelect.angle(deg) < 70)
+    {
+     /*frontLeftBase.spin(directionType::rev, 20, velocityUnits::pct); //Win Point Left
+     frontRightBase.spin(directionType::rev, 20, velocityUnits::pct);
+     slipClaw.spin(reverse, 100, pct);
+     vex::wait(800, msec);
+     slipClaw.stop(brake);
+     frontLeftBase.stop(brake);
+     frontRightBase.stop(brake);
+     vex::wait(1000, msec);
+     slipClaw.spin(fwd, 100, velocityUnits::pct);
+     vex::wait(800, msec);
+     slipClaw.stop(brake);
+     frontLeftBase.spin(directionType::fwd, 10, velocityUnits::pct);
+     frontRightBase.spin(directionType::fwd, 10, velocityUnits::pct);
+     vex::wait(1000, msec);
+     frontLeftBase.stop(brake);
+     frontRightBase.stop(brake);*/
+     //Working right win point
+     /*drivebackPD(10, 60);
+     slipClaw.spin(directionType::rev, 100, pct);
+     vex::wait(1000, msec);
+     slipClaw.stop(brake);
+     drivePD(12, 60);
+     slipClaw.spin(directionType::fwd, 60, pct);
+     vex::wait(500, msec);
+     frontLeftBase.spin(directionType::fwd, 40, velocityUnits::pct);
+     frontRightBase.spin(directionType::fwd, 40, velocityUnits::pct);
+     vex::wait(500, msec);
+     slipClaw.stop(brake);
+     frontLeftBase.stop(brake);
+     frontRightBase.stop(brake);*/
+     
+    }
+    else if(autonSelect.angle(deg) >= 70 && autonSelect.angle(deg) < 140)
+    {
+      /*frontLeftBase.stop(); //Grab Right Side
+      frontRightBase.stop();
+      drivebackPDforkLift(49, 100); //Drives with claw facing mobile goal
+      //The robot moves forward slightly to get a better grip on the goal
+      closeClaw();  //self-explanitory
+      drivePD(28, 100);  //Drives back to our side of the field
+      turn135();
+      drivePD(40, 100);
+      forkLift.spin(fwd);
+      vex::wait(1000, msec);
+      forkLift.stop();
+      drivebackPD(40, 100);*/ //End right side + middle neutral goals
+      //FUTURE WIN POINT
+      forkLift.spin(reverse, 100, pct);
+      vex::wait(500, msec);
+      forkLift.stop();
+      drivebackPD(24, 100);
+      CWturn45(41);
+      while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit) //Move the forklift down 
+      {
+        forkLift.spin(reverse);
+      }
+
+      forkLift.stop(); 
+      drivePD(104, 100);
+      forkLift.spin(forward);
+      vex::wait(500, msec);
+      forkLift.stop();
+      drivebackPD(10, 100);
+    }
+  
+    else if(autonSelect.angle(deg) >= 140 && autonSelect.angle(deg) < 210)
+    {
+      //left side grab
+      drivebackPD(50, 100);
+      frontLeftBase.spin(directionType::rev, 10, velocityUnits::pct);
+      centerLeftBase.spin(directionType::rev, 10, velocityUnits::pct);
+      backLeftBase.spin(directionType::rev, 10, velocityUnits::pct);
+      
+      frontRightBase.spin(directionType::rev, 10, velocityUnits::pct);
+      centerRightBase.spin(directionType::rev, 10, velocityUnits::pct);
+      backRightBase.spin(directionType::rev, 10, velocityUnits::pct);
+      closeClaw();  //self-explanitory
+      stopBase();
+      drivePD(45, 100);
+      while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit) //Move the forklift down 
+      {
+        forkLift.spin(reverse);
+      }
+
+      forkLift.stop();                             //Stop the forklift
+    }
+    else
+    {
+      //no auton
+    }
+
   resetMotorSpeeds();                          //Resets the motor speeds to their defaults for driver control
   
 }

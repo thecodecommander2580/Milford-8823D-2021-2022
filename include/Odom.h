@@ -1,7 +1,14 @@
 int pos();
-void moveToPoint(double desiredX, double desiredY);
+void moveToPoint(double desiredX, double desiredY, bool forwards);
 void odomTurn(double targetO);
 void turnToPoint(double desiredX, double desiredY);
 void drivePD(double dist, int speedCap);
 void drivebackPD(double dist, int speedCap);
+void drivebackPDforkLift(double dist, int speedCap);
+void turn45();
 void closeClaw();
+void turn90();
+void CWturn90();
+void CWturn45(float target);
+void turn135();
+void stopBase();
