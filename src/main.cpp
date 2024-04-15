@@ -181,9 +181,22 @@ void pre_auton(void) {
 
 void autonomous(void) {
 
-  leftDrive.stop();
-  rightDrive.stop();
+     leftDrive.stop();
+     rightDrive.stop();
+     drivebackPD(48, 100);
+     leftDrive.spin(directionType::rev, 10, velocityUnits::pct);
+     rightDrive.spin(directionType::rev, 10, velocityUnits::pct);
+     closeClaw();
+     leftDrive.stop(brake);
+     rightDrive.stop(brake);
+     drivePD(42, 100);
+     while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit) //Move the forklift down untill it's fully down
+      {
+        forkLift.spin(reverse);
+      }
 
+      forkLift.stop();                             //Stop the forklift
+/*
   setBaseSpeed(75);                           //Set the velocity of the motors
   slipClaw.setVelocity(100, percent);
 
@@ -198,8 +211,9 @@ void autonomous(void) {
   }
 
   forkLift.stop();                             //Stop the forklift
-  
+  */
   resetMotorSpeeds();                          //Resets the motor speeds to their defaults for driver control
+  
 }
 
 /*---------------------------------------------------------------------------*/
@@ -233,7 +247,8 @@ void usercontrol(void) {
 
     if(Controller1.ButtonL1.pressing() && liftPotentiometer.angle(degrees) < liftUpperLimit)  //Lift Controls
     {
-      lift.spin(forward);
+      lift.spin(forward);   
+
     }
 
     else if(Controller1.ButtonL2.pressing() && liftPotentiometer.angle(degrees) > liftLowerLimit)

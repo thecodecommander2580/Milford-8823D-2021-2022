@@ -318,3 +318,80 @@ void moveToPoint(double desiredX, double desiredY)
     leftDrive.stop(brakeType::brake);
     rightDrive.stop(brakeType::brake);
 }
+void drivePD(double dist, int speedCap)
+{
+  const int diameter = 4;
+  float kP = 1.3;
+  float kD = 0.1;
+  float error = dist;
+  float prevError = dist;
+  float derivError;
+  float motorSpeed;
+  float minSpeed = 35;
+  leftDrive.setPosition(0,rev);
+  rightDrive.setPosition(0, rev);
+  while(leftDrive.position(rev)*diameter*pi < dist)
+  {
+    error = dist-(leftDrive.position(rev)*diameter*pi);
+    derivError = prevError-error;
+    motorSpeed = error*kP + derivError*kD;
+    if(motorSpeed > speedCap)
+    {
+      motorSpeed = speedCap;
+    }
+    else if(motorSpeed < minSpeed)
+    {
+      motorSpeed = minSpeed;
+    }
+    leftDrive.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    rightDrive.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    Controller1.Screen.setCursor(2, 0);
+    Controller1.Screen.clearLine();
+    Controller1.Screen.print("Motor Speed: %f", motorSpeed);
+    vex::wait(15, msec);
+  }
+  leftDrive.stop(brake);
+  rightDrive.stop(brake);
+}
+void drivebackPD(double dist, int speedCap)
+{
+  const int diameter = 4;
+  float kP = 1.6;
+  float kD = 0.1;
+  float error = dist;
+  float prevError = dist;
+  float derivError;
+  float motorSpeed;
+  int minSpeed = 40;
+  leftDrive.setPosition(0,rev);
+  rightDrive.setPosition(0, rev);
+  leftDrive.spin(directionType::rev, 20, velocityUnits::pct);
+  rightDrive.spin(directionType::rev, 20, velocityUnits::pct);
+  vex::wait(200, msec);
+  while(fabs(leftDrive.position(rev)*diameter*pi) < dist)
+  {
+    error = dist-(fabs(leftDrive.position(rev)*diameter*pi));
+    derivError = prevError-error;
+    motorSpeed = error*kP + derivError*kD;
+    if(motorSpeed > speedCap)
+    {
+      motorSpeed = speedCap;
+    }
+    else if(motorSpeed < minSpeed) 
+    {
+      motorSpeed = minSpeed;
+    }
+    else{}
+    leftDrive.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    rightDrive.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    vex::wait(15, msec);
+  }
+  leftDrive.stop(brake);
+  rightDrive.stop(brake);
+}
+void closeClaw()
+{
+  slipClaw.spin(directionType::rev, 100, velocityUnits::pct);
+  vex::wait(1000, msec);
+  slipClaw.stop(brake);
+}
