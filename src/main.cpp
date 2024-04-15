@@ -14,7 +14,7 @@
 // leftDrive            motor_group   21, 3           
 // rightDrive           motor_group   9, 6            
 // forkLift             motor         2               
-// slipClaw             motor         11              
+// slipClaw             motor         12              
 // lift                 motor         14              
 // liftPotentiometer    potV2         A               
 // leftRotation         encoder       C, D            
@@ -36,6 +36,7 @@ competition Competition;
 
 bool reverseDriving = false; //Changing this between "true" and "false" will flip the front and back of the robot when it comes to driving.
 
+
 int liftSpeed = 90; //Configure the default speeds of motors
 int forkliftSpeed = 95;
 int slipclawSpeed = 95;
@@ -47,10 +48,44 @@ float liftLowerLimit = 170;
 float forkLiftUpperLimit = 325;
 float forkLiftLowerLimit = 153;
 
+float wheelDiamater = 4;
+
+
 bool debug = false;
 
+const double pi = 3.1415926;
 
 // Functions
+
+void moveBaseForward(double Distance, bool doNotContinue)
+{
+
+  double wheelCir = 2*pi*(wheelDiamater/2);
+
+  double wheelRotations = Distance/wheelCir;
+
+  leftDrive.rotateFor(reverse, wheelRotations, turns, false);
+  rightDrive.rotateFor(reverse, wheelRotations, turns, doNotContinue);
+
+}
+
+void moveBaseBackwards(double Distance, bool doNotContinue)
+{
+
+  double wheelCir = 2*pi*(wheelDiamater/2);
+
+  double wheelRotations = Distance/wheelCir;
+
+  leftDrive.rotateFor(forward, wheelRotations, turns, false);
+  rightDrive.rotateFor(forward, wheelRotations, turns, doNotContinue);
+
+}
+
+void setBaseSpeed(float speed)
+{
+  leftDrive.setVelocity(speed, percent);
+  rightDrive.setVelocity(speed, percent);
+}
 
 void resetMotorSpeeds() //Resets the motor speeds to their defaults as defined above.
 {
@@ -58,6 +93,7 @@ void resetMotorSpeeds() //Resets the motor speeds to their defaults as defined a
   forkLift.setVelocity(forkliftSpeed, percent);
   slipClaw.setVelocity(slipclawSpeed, percent);
 }
+
 
 /* //Unused Functions
 
@@ -144,15 +180,26 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+
+
   leftDrive.stop();
   rightDrive.stop();
 
+  setBaseSpeed(75);
+  slipClaw.setVelocity(100, percent);
+
+  moveBaseForward(50, true);
+  slipClaw.rotateFor(reverse, 0.87, turns);
+  moveBaseBackwards(30, true);
+  
   while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit)
   {
     forkLift.spin(reverse);
   }
 
   forkLift.stop();
+  
+  resetMotorSpeeds(); //Resets the motor speeds to their default driver control
 }
 
 /*---------------------------------------------------------------------------*/
@@ -265,8 +312,8 @@ void usercontrol(void) {
 
     if(debug)
     {
-      //printf("liftPotentiometer = %f /n" , liftPotentiometer.angle(degrees));
-      printf("liftPotentiometer = %f /n" , fLiftPotentiometer.angle(degrees));
+      printf("liftPotentiometer = %f \n" , liftPotentiometer.angle(degrees));
+      printf("liftPotentiometer = %f \n\n" , fLiftPotentiometer.angle(degrees));
     }
     
     wait(20, msec); // Sleep the task for a short amount of time to
