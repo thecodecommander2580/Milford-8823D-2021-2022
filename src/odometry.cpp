@@ -35,9 +35,9 @@ int pos() //This will constantly be running in the background updating the posit
   double polarAngle;
   double deltaGlobalX;
   double deltaGlobalY;
-  leftRotation.resetRotation();
-  rightRotation.resetRotation();
-  backRotation.resetRotation();
+  leftRotation.resetPosition();
+  rightRotation.resetPosition();
+  backRotation.resetPosition();
   Inertial.setRotation(intAngle, degrees);
   while(true)
   {
@@ -161,14 +161,20 @@ void odomTurn(double targetO)
       motorPower = -speedCap;
     }
     else {}
-    leftDrive.spin(directionType::fwd, motorPower, velocityUnits::pct);
-    rightDrive.spin(directionType::fwd, -motorPower, velocityUnits::pct);
+    frontLeftBase.spin(directionType::fwd, motorPower, velocityUnits::pct);
+    centerLeftBase.spin(directionType::fwd, motorPower, velocityUnits::pct);
+    backLeftBase.spin(directionType::fwd, motorPower, velocityUnits::pct);
+
+    frontRightBase.spin(directionType::fwd, -motorPower, velocityUnits::pct);
+    centerRightBase.spin(directionType::fwd, -motorPower, velocityUnits::pct);
+    backRightBase.spin(directionType::fwd, -motorPower, velocityUnits::pct);
     prevError = error;
     vex::wait(40, msec);
   }
   
-  leftDrive.stop(brake);
-  rightDrive.stop(brake);
+  frontLeftBase.stop(brake);
+
+  frontRightBase.stop(brake);
 
   if(absAngle < -2)
   {
@@ -210,8 +216,13 @@ void turnToPoint(double desiredX, double desiredY)
     correction = error*rkP;
     vex::wait(10, msec);
   }
-    leftDrive.stop(brakeType::brake);
-    rightDrive.stop(brakeType::brake);
+    frontLeftBase.stop(brakeType::brake);
+    centerLeftBase.stop(brakeType::brake);
+    backLeftBase.stop(brakeType::brake);
+
+    frontRightBase.stop(brakeType::brake);
+    centerLeftBase.stop(brakeType::brake);
+    backLeftBase.stop(brakeType::brake);
 }
 void moveToPoint(double desiredX, double desiredY)
 {
@@ -310,13 +321,23 @@ void moveToPoint(double desiredX, double desiredY)
     {
       break;
     }
-    leftDrive.spin(directionType::fwd, motorPower+correction, velocityUnits::pct);
-    rightDrive.spin(directionType::fwd, motorPower-correction, velocityUnits::pct);
+    frontLeftBase.spin(directionType::fwd, motorPower+correction, velocityUnits::pct);
+    centerLeftBase.spin(directionType::fwd, motorPower+correction, velocityUnits::pct);
+    backLeftBase.spin(directionType::fwd, motorPower+correction, velocityUnits::pct);
+
+    frontRightBase.spin(directionType::fwd, motorPower-correction, velocityUnits::pct);
+    centerRightBase.spin(directionType::fwd, motorPower-correction, velocityUnits::pct);
+    backRightBase.spin(directionType::fwd, motorPower-correction, velocityUnits::pct);
     prevError = distToPoint;
     vex::wait(20, msec);
   }
-    leftDrive.stop(brakeType::brake);
-    rightDrive.stop(brakeType::brake);
+    frontLeftBase.stop(brakeType::brake);
+    centerLeftBase.stop(brakeType::brake);
+    backLeftBase.stop(brakeType::brake);
+
+    frontRightBase.stop(brakeType::brake);
+    centerRightBase.stop(brakeType::brake);
+    backRightBase.stop(brakeType::brake);
 }
 void drivePD(double dist, int speedCap)
 {
@@ -328,11 +349,11 @@ void drivePD(double dist, int speedCap)
   float derivError;
   float motorSpeed;
   float minSpeed = 35;
-  leftDrive.setPosition(0,rev);
-  rightDrive.setPosition(0, rev);
-  while(leftDrive.position(rev)*diameter*pi < dist)
+  frontLeftBase.setPosition(0,rev);
+  frontRightBase.setPosition(0, rev);
+  while(frontLeftBase.position(rev)*diameter*pi < dist)
   {
-    error = dist-(leftDrive.position(rev)*diameter*pi);
+    error = dist-(frontLeftBase.position(rev)*diameter*pi);
     derivError = prevError-error;
     motorSpeed = error*kP + derivError*kD;
     if(motorSpeed > speedCap)
@@ -343,15 +364,25 @@ void drivePD(double dist, int speedCap)
     {
       motorSpeed = minSpeed;
     }
-    leftDrive.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
-    rightDrive.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    frontLeftBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    centerLeftBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    backLeftBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+
+    frontRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    centerRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
+    backRightBase.spin(directionType::fwd, motorSpeed, velocityUnits::pct);
     Controller1.Screen.setCursor(2, 0);
     Controller1.Screen.clearLine();
     Controller1.Screen.print("Motor Speed: %f", motorSpeed);
     vex::wait(15, msec);
   }
-  leftDrive.stop(brake);
-  rightDrive.stop(brake);
+  frontLeftBase.stop(brake);
+  centerLeftBase.stop(brake);
+  backLeftBase.stop(brake);
+  
+  frontRightBase.stop(brake);
+  centerRightBase.stop(brake);
+  backRightBase.stop(brake);
 }
 void drivebackPD(double dist, int speedCap)
 {
@@ -363,14 +394,21 @@ void drivebackPD(double dist, int speedCap)
   float derivError;
   float motorSpeed;
   int minSpeed = 40;
-  leftDrive.setPosition(0,rev);
-  rightDrive.setPosition(0, rev);
-  leftDrive.spin(directionType::rev, 20, velocityUnits::pct);
-  rightDrive.spin(directionType::rev, 20, velocityUnits::pct);
+  frontLeftBase.setPosition(0,rev);
+  frontRightBase.setPosition(0, rev);
+
+  frontLeftBase.spin(directionType::rev, 20, velocityUnits::pct);
+  centerLeftBase.spin(directionType::rev, 20, velocityUnits::pct);
+  backLeftBase.spin(directionType::rev, 20, velocityUnits::pct);
+
+  frontRightBase.spin(directionType::rev, 20, velocityUnits::pct);
+  centerRightBase.spin(directionType::rev, 20, velocityUnits::pct);
+  backRightBase.spin(directionType::rev, 20, velocityUnits::pct);
+  
   vex::wait(200, msec);
-  while(fabs(leftDrive.position(rev)*diameter*pi) < dist)
+  while(fabs(frontLeftBase.position(rev)*diameter*pi) < dist)
   {
-    error = dist-(fabs(leftDrive.position(rev)*diameter*pi));
+    error = dist-(fabs(frontLeftBase.position(rev)*diameter*pi));
     derivError = prevError-error;
     motorSpeed = error*kP + derivError*kD;
     if(motorSpeed > speedCap)
@@ -382,16 +420,31 @@ void drivebackPD(double dist, int speedCap)
       motorSpeed = minSpeed;
     }
     else{}
-    leftDrive.spin(directionType::rev, motorSpeed, velocityUnits::pct);
-    rightDrive.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    frontLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    centerLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    backLeftBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+
+    frontRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    centerRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
+    backRightBase.spin(directionType::rev, motorSpeed, velocityUnits::pct);
     vex::wait(15, msec);
   }
-  leftDrive.stop(brake);
-  rightDrive.stop(brake);
+  frontLeftBase.stop(brake);
+  centerLeftBase.stop(brake);
+  backLeftBase.stop(brake);
+
+  frontRightBase.stop(brake);
+  centerRightBase.stop(brake);
+  backRightBase.stop(brake);
 }
+
+
 void closeClaw()
 {
+  /*
   slipClaw.spin(directionType::rev, 100, velocityUnits::pct);
   vex::wait(1000, msec);
   slipClaw.stop(brake);
+  */
+  claw.set(false);
 }

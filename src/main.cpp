@@ -11,17 +11,22 @@
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
 // Controller1          controller                    
-// leftDrive            motor_group   21, 3           
-// rightDrive           motor_group   9, 6            
-// forkLift             motor         2               
-// slipClaw             motor         12              
-// lift                 motor         14              
+// forkLift             motor         10              
+// lift                 motor         20              
 // liftPotentiometer    potV2         A               
-// leftRotation         encoder       C, D            
-// rightRotation        encoder       E, F            
-// backRotation         encoder       G, H            
-// Inertial             inertial      4               
+// Inertial             inertial      1               
 // fLiftPotentiometer   potV2         B               
+// leftRotation         rotation      19              
+// rightRotation        rotation      18              
+// backRotation         rotation      17              
+// PotentiometerG       pot           G               
+// claw                 digital_out   C               
+// frontLeftBase        motor         11              
+// centerLeftBase       motor         12              
+// backLeftBase         motor         13              
+// frontRightBase       motor         14              
+// centerRightBase      motor         15              
+// backRightBase        motor         16              
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -39,7 +44,7 @@ bool reverseDriving = false; //Changing this between "true" and "false" will fli
 
 int liftSpeed = 90; //Configure the default speeds of motors
 int forkliftSpeed = 95;
-int slipclawSpeed = 95;
+//int slipclawSpeed = 95;
 
 
 float liftUpperLimit = 297; //Configure the min and max height for the fork lift
@@ -64,8 +69,13 @@ void moveBaseForward(double Distance, bool doNotContinue)
 
   double wheelRotations = Distance/wheelCir;
 
-  leftDrive.rotateFor(reverse, wheelRotations, turns, false);
-  rightDrive.rotateFor(reverse, wheelRotations, turns, doNotContinue);
+  frontLeftBase.rotateFor(reverse, wheelRotations, turns, false);
+  centerLeftBase.rotateFor(reverse, wheelRotations, turns, false);
+  backLeftBase.rotateFor(reverse, wheelRotations, turns, false);
+
+  frontRightBase.rotateFor(reverse, wheelRotations, turns, false);
+  centerRightBase.rotateFor(reverse, wheelRotations, turns, false);
+  backRightBase.rotateFor(reverse, wheelRotations, turns, doNotContinue);
 
 }
 
@@ -76,22 +86,32 @@ void moveBaseBackwards(double Distance, bool doNotContinue)
 
   double wheelRotations = Distance/wheelCir;
 
-  leftDrive.rotateFor(forward, wheelRotations, turns, false);
-  rightDrive.rotateFor(forward, wheelRotations, turns, doNotContinue);
+  frontLeftBase.rotateFor(forward, wheelRotations, turns, false);
+  centerLeftBase.rotateFor(forward, wheelRotations, turns, false);
+  backLeftBase.rotateFor(forward, wheelRotations, turns, false);
+
+  frontRightBase.rotateFor(forward, wheelRotations, turns, false);
+  centerRightBase.rotateFor(forward, wheelRotations, turns, false);
+  backRightBase.rotateFor(forward, wheelRotations, turns, doNotContinue);
 
 }
 
 void setBaseSpeed(float speed)
 {
-  leftDrive.setVelocity(speed, percent);
-  rightDrive.setVelocity(speed, percent);
+  frontLeftBase.setVelocity(speed, percent);
+  centerLeftBase.setVelocity(speed, percent);
+  backLeftBase.setVelocity(speed, percent);
+
+  frontRightBase.setVelocity(speed, percent);
+  centerRightBase.setVelocity(speed, percent);
+  backRightBase.setVelocity(speed, percent);
 }
 
 void resetMotorSpeeds() //Resets the motor speeds to their defaults as defined above.
 {
   lift.setVelocity(liftSpeed, percent);
   forkLift.setVelocity(forkliftSpeed, percent);
-  slipClaw.setVelocity(slipclawSpeed, percent);
+  //slipClaw.setVelocity(slipclawSpeed, percent);
 }
 
 
@@ -143,12 +163,19 @@ void moveForkLift(float speed, float position) //Moves the Fork Lift. Can use th
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  leftDrive.setStopping(coast); //Configure Base Motors
-  rightDrive.setStopping(coast);
-  leftDrive.setMaxTorque(100, percent);
-  rightDrive.setMaxTorque(100, percent);
-  leftDrive.spin(forward);  
-  rightDrive.spin(forward);
+  frontLeftBase.setStopping(coast); //Configure Base Motors
+  frontRightBase.setStopping(coast);
+  centerLeftBase.setStopping(coast);
+  centerRightBase.setStopping(coast);
+  backLeftBase.setStopping(coast);
+  backRightBase.setStopping(coast);
+  frontLeftBase.setMaxTorque(100, percent);
+  frontRightBase.setMaxTorque(100, percent);
+  centerLeftBase.setMaxTorque(100, percent);
+  centerRightBase.setMaxTorque(100, percent);
+  backLeftBase.setMaxTorque(100, percent);
+  backRightBase.setMaxTorque(100, percent);
+  
 
   lift.setVelocity(liftSpeed, percent);  //Configure Lift Motor
   lift.setStopping(hold);
@@ -158,9 +185,9 @@ void pre_auton(void) {
   forkLift.setMaxTorque(100, percent);
   forkLift.setStopping(hold);
 
-  slipClaw.setStopping(hold);   //Configure Slip Claw
-  slipClaw.setMaxTorque(100, percent);
-  slipClaw.setVelocity(slipclawSpeed, percent);
+  //slipClaw.setStopping(hold);   //Configure Slip Claw
+  //slipClaw.setMaxTorque(100, percent);
+  //slipClaw.setVelocity(slipclawSpeed, percent);
 
   if(debug)
   {
@@ -181,14 +208,14 @@ void pre_auton(void) {
 
 void autonomous(void) {
 
-     leftDrive.stop();
-     rightDrive.stop();
+     frontLeftBase.stop();
+     frontRightBase.stop();
      drivebackPD(48, 100);
-     leftDrive.spin(directionType::rev, 10, velocityUnits::pct);
-     rightDrive.spin(directionType::rev, 10, velocityUnits::pct);
+     frontLeftBase.spin(directionType::rev, 10, velocityUnits::pct);
+     frontRightBase.spin(directionType::rev, 10, velocityUnits::pct);
      closeClaw();
-     leftDrive.stop(brake);
-     rightDrive.stop(brake);
+     frontLeftBase.stop(brake);
+     frontRightBase.stop(brake);
      drivePD(42, 100);
      while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit) //Move the forklift down untill it's fully down
       {
@@ -230,19 +257,33 @@ void usercontrol(void) {
   // User control code here, inside the loop
   while (1) {
 
-    leftDrive.spin(forward); 
-    rightDrive.spin(forward);
+   frontLeftBase.spin(forward);  
+   frontRightBase.spin(forward);
+   centerLeftBase.spin(forward);  
+   centerRightBase.spin(forward);
+   backLeftBase.spin(forward);  
+   backRightBase.spin(forward);
 
     if(reverseDriving)  //Driving Contorls. To flip them, change the "reverseDriving" variable at the top of the program, where global instances are defined.
     {
-      leftDrive.setVelocity(-Controller1.Axis3.position(percent) + Controller1.Axis1.position(percent), percent);
-      rightDrive.setVelocity(-Controller1.Axis3.position(percent) - Controller1.Axis1.position(percent), percent);
+      frontLeftBase.setVelocity(-Controller1.Axis3.position(percent) + Controller1.Axis1.position(percent), percent);
+      centerLeftBase.setVelocity(-Controller1.Axis3.position(percent) + Controller1.Axis1.position(percent), percent);
+      backLeftBase.setVelocity(-Controller1.Axis3.position(percent) + Controller1.Axis1.position(percent), percent);
+
+      frontRightBase.setVelocity(-Controller1.Axis3.position(percent) - Controller1.Axis1.position(percent), percent);
+      centerRightBase.setVelocity(-Controller1.Axis3.position(percent) - Controller1.Axis1.position(percent), percent);
+      backRightBase.setVelocity(-Controller1.Axis3.position(percent) - Controller1.Axis1.position(percent), percent);
     }
 
     else
     {
-      leftDrive.setVelocity(-Controller1.Axis3.position(percent) - Controller1.Axis1.position(percent), percent);
-      rightDrive.setVelocity(-Controller1.Axis3.position(percent) + Controller1.Axis1.position(percent), percent);
+      frontLeftBase.setVelocity(-Controller1.Axis3.position(percent) - Controller1.Axis1.position(percent), percent);
+      centerLeftBase.setVelocity(-Controller1.Axis3.position(percent) - Controller1.Axis1.position(percent), percent);
+      backLeftBase.setVelocity(-Controller1.Axis3.position(percent) - Controller1.Axis1.position(percent), percent);
+
+      frontRightBase.setVelocity(-Controller1.Axis3.position(percent) + Controller1.Axis1.position(percent), percent);
+      centerRightBase.setVelocity(-Controller1.Axis3.position(percent) + Controller1.Axis1.position(percent), percent);
+      backRightBase.setVelocity(-Controller1.Axis3.position(percent) + Controller1.Axis1.position(percent), percent);
     }
 
     if(Controller1.ButtonL1.pressing() && liftPotentiometer.angle(degrees) < liftUpperLimit)  //Lift Controls
@@ -277,7 +318,7 @@ void usercontrol(void) {
       forkLift.stop();
     }
 
-
+    /*
     if(Controller1.ButtonUp.pressing())  //Slip Claw Controls
     {
       slipClaw.spin(forward);
@@ -292,6 +333,18 @@ void usercontrol(void) {
     {
       slipClaw.stop();
     }
+    */
+
+   if(Controller1.ButtonUp.pressing())  //Claw Controls
+    {
+      claw.set(true);
+    }
+
+    else if (Controller1.ButtonDown.pressing())
+    {
+      claw.set(false);
+    }
+    
 
 
     if(Controller1.ButtonL1.pressing() && Controller1.ButtonY.pressing())  //Fork Lift and Arm controls with an override with the "Y" button.

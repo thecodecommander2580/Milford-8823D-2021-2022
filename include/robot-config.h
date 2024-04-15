@@ -4,17 +4,22 @@ extern brain Brain;
 
 // VEXcode devices
 extern controller Controller1;
-extern motor_group leftDrive;
-extern motor_group rightDrive;
 extern motor forkLift;
-extern motor slipClaw;
 extern motor lift;
 extern potV2 liftPotentiometer;
-extern encoder leftRotation;
-extern encoder rightRotation;
-extern encoder backRotation;
 extern inertial Inertial;
 extern potV2 fLiftPotentiometer;
+extern rotation leftRotation;
+extern rotation rightRotation;
+extern rotation backRotation;
+extern pot PotentiometerG;
+extern digital_out claw;
+extern motor frontLeftBase;
+extern motor centerLeftBase;
+extern motor backLeftBase;
+extern motor frontRightBase;
+extern motor centerRightBase;
+extern motor backRightBase;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
