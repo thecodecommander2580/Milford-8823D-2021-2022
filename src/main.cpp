@@ -21,6 +21,7 @@
 // rightRotation        encoder       E, F            
 // backRotation         encoder       G, H            
 // Inertial             inertial      4               
+// fLiftPotentiometer   potV2         B               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -36,14 +37,18 @@ competition Competition;
 bool reverseDriving = false; //Changing this between "true" and "false" will flip the front and back of the robot when it comes to driving.
 
 int liftSpeed = 90; //Configure the default speeds of motors
-int forkliftSpeed = 50;
-int slipclawSpeed = 75;
+int forkliftSpeed = 95;
+int slipclawSpeed = 95;
 
 
-float liftUpperLimit = 297; //Configure the min and max height for the lift
+float liftUpperLimit = 297; //Configure the min and max height for the fork lift
 float liftLowerLimit = 170;
 
+float forkLiftUpperLimit = 325;
+float forkLiftLowerLimit = 153;
+
 bool debug = false;
+
 
 // Functions
 
@@ -142,6 +147,12 @@ void autonomous(void) {
   leftDrive.stop();
   rightDrive.stop();
 
+  while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit)
+  {
+    forkLift.spin(reverse);
+  }
+
+  forkLift.stop();
 }
 
 /*---------------------------------------------------------------------------*/
@@ -183,23 +194,23 @@ void usercontrol(void) {
       lift.spin(reverse);
     }
 
-    else
+    else if(!Controller1.ButtonY.pressing())
     {
       lift.stop();
     }
 
 
-    if(Controller1.ButtonR1.pressing()) //Fork Lift Controls
+    if(Controller1.ButtonR1.pressing() && fLiftPotentiometer.angle(degrees) < forkLiftUpperLimit) //Fork Lift Controls
     {
       forkLift.spin(forward);
     }
 
-    else if(Controller1.ButtonR2.pressing())
+    else if(Controller1.ButtonR2.pressing() && fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit )
     {
       forkLift.spin(reverse);
     }
 
-    else
+    else if(!Controller1.ButtonY.pressing())
     {
       forkLift.stop();
     }
@@ -220,9 +231,42 @@ void usercontrol(void) {
       slipClaw.stop();
     }
 
+
+    if(Controller1.ButtonL1.pressing() && Controller1.ButtonY.pressing())  //Fork Lift and Arm controls with an override with the "Y" button.
+    {
+      lift.spin(forward);
+    }
+
+    else if(Controller1.ButtonL2.pressing() && Controller1.ButtonY.pressing())
+    {
+      lift.spin(reverse);
+    }
+
+    else if(Controller1.ButtonY.pressing())
+    {
+      lift.stop();
+    }
+
+
+    if(Controller1.ButtonR1.pressing() && Controller1.ButtonY.pressing()) 
+    {
+      forkLift.spin(forward);
+    }
+
+    else if(Controller1.ButtonR2.pressing() && Controller1.ButtonY.pressing())
+    {
+      forkLift.spin(reverse);
+    }
+
+    else if(Controller1.ButtonY.pressing())
+    {
+      forkLift.stop();
+    }
+
     if(debug)
     {
-      printf("liftPotentiometer = %f /n" , liftPotentiometer.angle(degrees));
+      //printf("liftPotentiometer = %f /n" , liftPotentiometer.angle(degrees));
+      printf("liftPotentiometer = %f /n" , fLiftPotentiometer.angle(degrees));
     }
     
     wait(20, msec); // Sleep the task for a short amount of time to

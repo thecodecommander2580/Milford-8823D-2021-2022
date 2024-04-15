@@ -14,6 +14,7 @@ extern encoder leftRotation;
 extern encoder rightRotation;
 extern encoder backRotation;
 extern inertial Inertial;
+extern potV2 fLiftPotentiometer;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

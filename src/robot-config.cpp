@@ -23,6 +23,7 @@ encoder leftRotation = encoder(Brain.ThreeWirePort.C);
 encoder rightRotation = encoder(Brain.ThreeWirePort.E);
 encoder backRotation = encoder(Brain.ThreeWirePort.G);
 inertial Inertial = inertial(PORT4);
+potV2 fLiftPotentiometer = potV2(Brain.ThreeWirePort.B);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

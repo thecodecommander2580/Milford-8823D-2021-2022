@@ -107,6 +107,7 @@ int pos() //This will constantly be running in the background updating the posit
     
     //Step 11: Update prevTheta
     prevAngle = absAngle;
+
     //Screen printing the x, y, and angle for testing purposes
     Controller1.Screen.setCursor(0, 0);
     Controller1.Screen.clearLine();
