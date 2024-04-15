@@ -37,7 +37,7 @@ bool reverseDriving = false; //Changing this between "true" and "false" will fli
 
 int liftSpeed = 90; //Configure the default speeds of motors
 int forkliftSpeed = 50;
-int slipclawSpeed = 60;
+int slipclawSpeed = 75;
 
 
 float liftUpperLimit = 297; //Configure the min and max height for the lift
@@ -205,12 +205,12 @@ void usercontrol(void) {
     }
 
 
-    if(Controller1.ButtonX.pressing())  //Slip Claw Controls
+    if(Controller1.ButtonUp.pressing())  //Slip Claw Controls
     {
       slipClaw.spin(forward);
     }
 
-    else if (Controller1.ButtonB.pressing())
+    else if (Controller1.ButtonDown.pressing())
     {
       slipClaw.spin(reverse);
     }
