@@ -181,25 +181,25 @@ void pre_auton(void) {
 
 void autonomous(void) {
 
-
   leftDrive.stop();
   rightDrive.stop();
 
-  setBaseSpeed(75);
+  setBaseSpeed(75);                           //Set the velocity of the motors
   slipClaw.setVelocity(100, percent);
 
-  moveBaseForward(50, true);
-  slipClaw.rotateFor(reverse, 0.87, turns);
-  moveBaseBackwards(30, true);
+  moveBaseForward(50, true);                  //Drive to the goal
+  slipClaw.rotateFor(reverse, 0.87, turns);   //Grab the goal
+  setBaseSpeed(100);                          //Increase the speed for driving away
+  moveBaseBackwards(30, true);                //Move the robot back to claim the goal
   
-  while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit)
+  while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit) //Move the forklift down untill it's fully down
   {
     forkLift.spin(reverse);
   }
 
-  forkLift.stop();
+  forkLift.stop();                             //Stop the forklift
   
-  resetMotorSpeeds(); //Resets the motor speeds to their default driver control
+  resetMotorSpeeds();                          //Resets the motor speeds to their defaults for driver control
 }
 
 /*---------------------------------------------------------------------------*/
