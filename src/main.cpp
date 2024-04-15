@@ -54,7 +54,7 @@ void resetMotorSpeeds() //Resets the motor speeds to their defaults as defined a
   slipClaw.setVelocity(slipclawSpeed, percent);
 }
 
-/*
+/* //Unused Functions
 
 void openSlipClaw(float speed) //Opens the Slip CLaw. Can use the default speed by setting it to 0. 
 {
@@ -141,6 +141,7 @@ void pre_auton(void) {
 void autonomous(void) {
   leftDrive.stop();
   rightDrive.stop();
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -204,12 +205,12 @@ void usercontrol(void) {
     }
 
 
-    if(Controller1.ButtonUp.pressing())  //Slip Claw Controls
+    if(Controller1.ButtonX.pressing())  //Slip Claw Controls
     {
       slipClaw.spin(forward);
     }
 
-    else if (Controller1.ButtonDown.pressing())
+    else if (Controller1.ButtonB.pressing())
     {
       slipClaw.spin(reverse);
     }
