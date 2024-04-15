@@ -208,22 +208,22 @@ void pre_auton(void) {
 
 void autonomous(void) {
 
-     frontLeftBase.stop();
-     frontRightBase.stop();
-     drivebackPD(48, 100);
-     frontLeftBase.spin(directionType::rev, 10, velocityUnits::pct);
-     frontRightBase.spin(directionType::rev, 10, velocityUnits::pct);
-     closeClaw();
-     frontLeftBase.stop(brake);
-     frontRightBase.stop(brake);
-     drivePD(42, 100);
-     while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit) //Move the forklift down untill it's fully down
-      {
-        forkLift.spin(reverse);
-      }
+  frontLeftBase.stop();
+  frontRightBase.stop();
+  drivebackPD(48, 100);
+  frontLeftBase.spin(directionType::rev, 10, velocityUnits::pct);
+  frontRightBase.spin(directionType::rev, 10, velocityUnits::pct);
+  closeClaw();
+  frontLeftBase.stop(brake);
+  frontRightBase.stop(brake);
+  drivePD(42, 100);
+  while(fLiftPotentiometer.angle(degrees) > forkLiftLowerLimit) //Move the forklift down untill it's fully down
+    {
+     forkLift.spin(reverse);
+    }
 
-      forkLift.stop();                             //Stop the forklift
-/*
+  forkLift.stop();                            //Stop the forklift
+  /*
   setBaseSpeed(75);                           //Set the velocity of the motors
   slipClaw.setVelocity(100, percent);
 

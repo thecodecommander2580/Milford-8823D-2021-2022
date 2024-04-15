@@ -35,7 +35,7 @@ int pos() //This will constantly be running in the background updating the posit
   double polarAngle;
   double deltaGlobalX;
   double deltaGlobalY;
-  leftRotation.resetPosition();
+  leftRotation.resetPosition(); //These commands had to be changed to reflect the new sensors.
   rightRotation.resetPosition();
   backRotation.resetPosition();
   Inertial.setRotation(intAngle, degrees);
